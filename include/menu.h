@@ -8,29 +8,39 @@
 #include "ui_input_field.h"
 
 typedef enum {
-    MENU_STATE_SELECT,
+    MENU_PAGE_SELECT,
+    MENU_PAGE_SIMPLE,
+    MENU_PAGE_COMPLEX,
+    MENU_PAGE_INPUT,
+    MENU_PAGE_OUTPUT,
+    MENU_PAGE_HELP,
+} menu_page_t;
 
-    MENU_STATE_SIMPLE_INPUT,
-    MENU_STATE_SIMPLE_ASCENDING,
-    MENU_STATE_SIMPLE_DESCENDING,
-    MENU_STATE_SIMPLE_FULL,
-    MENU_STATE_SIMPLE_N,
+typedef enum {
+    SIMPLE_ASCENDING,
+    SIMPLE_DESCENDING,
+    SIMPLE_FULL,
+    SIMPLE_N,
 
-    MENU_STATE_COMPLEX_INPUT,
-    MENU_STATE_COMPLEX_UNTIL,
-    MENU_STATE_COMPLEX_N,
-
-    MENU_STATE_OUTPUT,
-} menu_state_t;
+    COMPLEX_UNTIL,
+    COMPLEX_N,
+} binomial_input_type_t;
 
 typedef struct {
-    input_field_group_t input_field;
-    input_field_t fields[7];
     int a_n; int a_d;
     int b_n; int b_d;
     int p_n; int p_d;
     int n;
-    char output[MAX_BINOMIAL_OUTPUT];
+} binomial_input_data_t;
+
+typedef struct {
+    menu_page_t page;
+    binomial_input_type_t input_type;
+    binomial_input_data_t input_data;
+    input_field_t input_fields[7];
+    input_group_t input_group;
+    binomial_info_t binomial_info;
+    char output_buf[MAX_BINOMIAL_OUTPUT];
     int output_start;
     int output_cursor;
 } menu_data_t;
