@@ -112,3 +112,45 @@ void format_expansion(char *out, fraction_t *coefs, binomial_info_t *info)
         }
     }
 }
+
+void format_expansion_title(char *out, binomial_info_t *info)
+{
+    int offset = 2;
+    char *prefix;
+    switch(info->type) {
+    case BINOMIAL_SIMPLE:
+        prefix = info->a.positive ? "" : "-";
+        sprintf(out+offset, "(%s%sx", prefix, format_fraction(info->a));
+        offset += strlen(out+offset);
+
+        prefix = info->b.positive ? "+" : "-";
+        sprintf(out+offset, "%s%s)^%u", prefix, format_fraction(info->b), info->p.numer);
+        break;
+
+    case BINOMIAL_COMPLEX:
+        prefix = info->a.positive ? "" : "-";
+        sprintf(out+offset, "%s%s(1", prefix, format_fraction(info->a));
+        offset += strlen(out+offset);
+
+        prefix = info->b.positive ? "+" : "-";
+        sprintf(out+offset, "%s%sx)^", prefix, format_fraction(info->b));
+        offset += strlen(out+offset);
+
+        prefix = info->p.positive ? "" : "-";
+        sprintf(out+offset, "%s%s", prefix, format_fraction(info->p));
+        break;
+    }
+}
+
+void format_expansion_bound(char *out, binomial_info_t *info)
+{
+    int offset = 2;
+    if(info->type == BINOMIAL_SIMPLE) {
+        out[offset] = '\0';
+        return;
+    }
+
+    fraction_t bounds = fraction_pow(info->b, -1);
+    bounds.positive = true;
+    sprintf(out+offset, "|x| < %s", format_fraction(bounds));
+}

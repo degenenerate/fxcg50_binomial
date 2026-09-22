@@ -42,6 +42,8 @@ typedef struct {
     input_field_t input_fields[7];
     input_group_t input_group;
     binomial_info_t binomial_info;
+    char title_buf[128];
+    char bound_buf[128];
     char output_buf[MAX_BINOMIAL_OUTPUT];
     int output_start;
     int output_cursor;

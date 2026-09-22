@@ -31,5 +31,7 @@ fraction_t *binomial_expansion(binomial_info_t *info);
 #define MAX_BINOMIAL_TERM_SIZE 36
 #define MAX_BINOMIAL_OUTPUT 512
 void format_expansion(char *out, fraction_t *coefs, binomial_info_t *info);
+void format_expansion_title(char *out, binomial_info_t *info);
+void format_expansion_bound(char *out, binomial_info_t *info);
 
 #endif

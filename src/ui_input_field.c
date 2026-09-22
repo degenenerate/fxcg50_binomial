@@ -105,6 +105,7 @@ void handle_input_group_input(input_group_t *group, int *key_ptr)
             group->editing = false;
             Cursor_SetFlashOff();
             *(group->fields[group->cursor].data) = atoi_int(group->edit_buf);
+            scroll_input_group(group, +1);
         }
         else if(key && key < 30000) {
             if(!numeric_input(key)) {

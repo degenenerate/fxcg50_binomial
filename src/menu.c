@@ -20,6 +20,11 @@ void reset_menu_data(menu_data_t *menu_data)
     menu_data->input_group.cursor = 0;
     menu_data->input_group.cursor_top = 0;
     menu_data->input_group.editing = false;
+
+    menu_data->title_buf[0] = '-';
+    menu_data->title_buf[1] = '-';
+    menu_data->bound_buf[0] = '-';
+    menu_data->bound_buf[1] = '-';
 }
 
 void handle_menu(menu_data_t *menu_data, int key)
@@ -66,6 +71,8 @@ void draw_menu(menu_data_t *menu_data)
         break;
 
     case MENU_PAGE_OUTPUT:
+        PrintXY(1, 1, menu_data->title_buf, TEXT_MODE_NORMAL, TEXT_COLOR_BLUE);
+        PrintXY(1, 2, menu_data->bound_buf, TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
         DisplayMBString((unsigned char*)menu_data->output_buf, menu_data->output_start, menu_data->output_cursor, 1, 8);
         break;
 
@@ -223,10 +230,12 @@ void handle_menu_input(menu_data_t *menu_data, int key)
             break;
 
         case KEY_CTRL_EXE:
+            {
             // ban divide by zeroes, neg. powers on simple expansions, etc.
             menu_data->binomial_info.a = fraction_create(menu_data->input_data.a_n, menu_data->input_data.a_d);
             menu_data->binomial_info.b = fraction_create(menu_data->input_data.b_n, menu_data->input_data.b_d);
             menu_data->binomial_info.p = fraction_create(menu_data->input_data.p_n, menu_data->input_data.p_d);
+
             if(menu_data->input_type <= SIMPLE_N) {
                 uint pow = menu_data->binomial_info.p.numer;
 
@@ -267,9 +276,6 @@ void handle_menu_input(menu_data_t *menu_data, int key)
                     return;
                 }
                 menu_data->binomial_info.type = BINOMIAL_SIMPLE;
-                fraction_t *coefs = binomial_expansion(&menu_data->binomial_info); 
-                format_expansion(menu_data->output_buf, coefs, &menu_data->binomial_info);
-                free(coefs);
             } else {
                 if(menu_data->binomial_info.a.denom == 0 
                 || menu_data->binomial_info.b.denom == 0 
@@ -292,14 +298,17 @@ void handle_menu_input(menu_data_t *menu_data, int key)
                     menu_data->binomial_info.n_count = 1;
                 }
                 menu_data->binomial_info.type = BINOMIAL_COMPLEX;
-                fraction_t *coefs = binomial_expansion(&menu_data->binomial_info); 
-                format_expansion(menu_data->output_buf, coefs, &menu_data->binomial_info);
-                free(coefs);
             }
+            fraction_t *coefs = binomial_expansion(&menu_data->binomial_info); 
+            format_expansion(menu_data->output_buf, coefs, &menu_data->binomial_info);
+            format_expansion_title(menu_data->title_buf, &menu_data->binomial_info);
+            format_expansion_bound(menu_data->bound_buf, &menu_data->binomial_info);
+            free(coefs);
 
             menu_data->page = MENU_PAGE_OUTPUT;
             menu_data->output_start = 0;
             menu_data->output_cursor = 0;
+            }
             break;
         }
         break;
