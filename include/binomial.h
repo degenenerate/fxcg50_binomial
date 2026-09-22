@@ -9,14 +9,23 @@ typedef enum {
     BINOMIAL_COMPLEX,    // a(1+bx)^p
 } binomial_type_t;
 
+typedef struct {
+    binomial_type_t type;
+    fraction_t a;
+    fraction_t b;
+    fraction_t p;
+    int n_start;
+    int n_incr;
+    int n_count;
+} binomial_info_t;
+
 uint factorial(uint n);
 uint nCr(uint n, uint r);
 
 fraction_t binomial_simple_n(fraction_t a, fraction_t b, uint p, uint n);
 fraction_t binomial_complex_n(fraction_t a, fraction_t b, fraction_t p, uint n);
-fraction_t *binomial_expansion(binomial_type_t expansion_type, fraction_t a, fraction_t b, fraction_t p, int n_start, int n_incr, int n_count);
+fraction_t *binomial_expansion(binomial_info_t *info);
 
-void format_simple_expansion(fraction_t *coefs, char *out, uint p, int n_start, int n_incr, int n_count);
-void format_complex_expansion(fraction_t *coefs, char *out, int n_start, int n_incr, int n_count);
+void format_expansion(char *out, fraction_t *coefs, binomial_info_t *info);
 
 #endif

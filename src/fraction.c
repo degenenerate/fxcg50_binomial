@@ -6,20 +6,17 @@ fraction_t fraction_create(int n, int d)
     return (fraction_t){sign, abs(n), abs(d)};
 }
 
-fraction_t fraction_mult(fraction_t a, fraction_t b, bool simplify) 
+fraction_t fraction_mult(fraction_t a, fraction_t b) 
 {
-    fraction_t r = {a.positive == b.positive, 
-                            a.numer * b.numer, 
-                            a.denom * b.denom};
-    if(simplify) {
-        r = fraction_simplify(r);
-    }
-    return r;
+     return (fraction_t){a.positive == b.positive, 
+                         a.numer * b.numer, 
+                         a.denom * b.denom
+                        };
 }
 
 fraction_t fraction_pow(fraction_t a, int p)
 {
-    if(p == 0) return (fraction_t){true, 1, 1};
+    if(p == 0) return FRACTION_ONE;
     if(p < 0) {
         uint d = a.denom;
         a.denom = a.numer;
@@ -64,7 +61,7 @@ uint gcd(uint a, uint b)
 
 char *format_fraction(fraction_t a)
 {
-    static char buffer[256];
+    static char buffer[32];
     if(a.numer == 0) {
         sprintf(buffer, "0");
     }
