@@ -16,7 +16,7 @@ typedef struct {
 #define INPUT_FIELD_EDIT_BUF_LEN 16
 
 typedef struct {
-    input_field_t *input_fields;
+    input_field_t *fields;
     int count;
     int top;
     int height;
@@ -26,10 +26,10 @@ typedef struct {
     char edit_buf[INPUT_FIELD_EDIT_BUF_LEN];
     int edit_start;
     int edit_cursor;
-} input_field_group_t;
+} input_group_t;
 
-void draw_input_field(input_field_group_t *field_group);
-void handle_input_field_input(input_field_group_t *field_group, int *key_ptr);
-void scroll_input_field(input_field_group_t *field_group, int offset);
+void draw_input_group(input_group_t *field_group);
+void handle_input_group_input(input_group_t *field_group, int *key_ptr);
+void scroll_input_group(input_group_t *field_group, int offset);
 
 #endif

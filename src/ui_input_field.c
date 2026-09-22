@@ -1,25 +1,25 @@
 #include "../include/ui_input_field.h"
 
-void draw_input_field(input_field_group_t *field_group)
+void draw_input_group(input_group_t *group)
 {
     const int colonX = 5;
     const int buf_len = 64;
     char print_buf[buf_len];
-    print_buf[0] == '-';
-    print_buf[1] == '-';
+    print_buf[0] = '-';
+    print_buf[1] = '-';
     char *print_start = print_buf + 2;
-    for(int i=0; i<field_group->height; ++i) {
+    for(int i=0; i<group->height; i++) {
         /*
          * We're looping from the group's top to bottom,
          * figuring out the offset and finding the index
         */
-        int y = field_group->top + i;
-        int index = field_group->cursor_top + i;
+        int y = group->top + i;
+        int index = group->cursor_top + i;
 
-        if(index >= field_group->count) break;
+        if(index >= group->count) break;
 
-        bool on_cursor = (index == field_group->cursor);
-        input_field_t field = field_group->input_fields[index];
+        bool on_cursor = (index == group->cursor);
+        input_field_t field = group->fields[index];
 
         int text_mode;
         int text_color = TEXT_COLOR_BLACK;
@@ -39,21 +39,21 @@ void draw_input_field(input_field_group_t *field_group)
 
     struct scrollbar scrlbar = (struct scrollbar){
         0,
-        field_group->count,
-        field_group->height,
-        field_group->cursor_top,
+        group->count,
+        group->height,
+        group->cursor_top,
         0,
         378,
-        24*(field_group->top - 1),
-        24*(field_group->height),
+        24*(group->top - 1),
+        24*(group->height),
         6,
     };
     Scrollbar(&scrlbar);
 }
 
-void handle_input_field_input(input_field_group_t *field_group, int *key_ptr)
+void handle_input_group_input(input_group_t *group, int *key_ptr)
 {
-    //Modifies key to be 0 if used
+    //key_ptr set to 0 if used during editing
     int key = *key_ptr;
     bool numeric_input(int key)
     {
@@ -62,7 +62,6 @@ void handle_input_field_input(input_field_group_t *field_group, int *key_ptr)
         if(key == KEY_CHAR_MINUS
         || key == KEY_CHAR_PLUS
         )   return true;
-
         return false;
     }
     int atoi_int(char *buf)
@@ -73,71 +72,71 @@ void handle_input_field_input(input_field_group_t *field_group, int *key_ptr)
         return atoi(buf);
     }
 
-    if(!field_group->editing) {
+    if(!group->editing) {
         if(key == KEY_CTRL_UP) {
-            scroll_input_field(field_group, -1);
+            scroll_input_group(group, -1);
         }
         else if(key == KEY_CTRL_DOWN) {
-            scroll_input_field(field_group, +1);
+            scroll_input_group(group, +1);
         }
         else if(numeric_input(key)) {
-            field_group->editing = true;
-            field_group->edit_start = 0;
-            field_group->edit_cursor = 0;
-            field_group->edit_buf[0] = '\0';
-            field_group->edit_cursor = EditMBStringChar(
-                    (unsigned char*)field_group->edit_buf, 
+            group->editing = true;
+            group->edit_start = 0;
+            group->edit_cursor = 0;
+            group->edit_buf[0] = '\0';
+            group->edit_cursor = EditMBStringChar(
+                    (unsigned char*)group->edit_buf, 
                     INPUT_FIELD_EDIT_BUF_LEN, 
-                    field_group->edit_cursor, 
+                    group->edit_cursor, 
                     key);
-            DisplayMBString((unsigned char*)field_group->edit_buf, 
-                    field_group->edit_start, 
-                    field_group->edit_cursor, 
+            DisplayMBString((unsigned char*)group->edit_buf, 
+                    group->edit_start, 
+                    group->edit_cursor, 
                     1, 8);
         }
     } else {
         if(key == KEY_CTRL_EXIT) {
             *key_ptr = KEY_PRGM_NONE;
-            field_group->editing = false;
+            group->editing = false;
             Cursor_SetFlashOff();
         }
         else if(key == KEY_CTRL_EXE) {
             *key_ptr = KEY_PRGM_NONE;
-            field_group->editing = false;
+            group->editing = false;
             Cursor_SetFlashOff();
-            *(field_group->input_fields[field_group->cursor].data) = atoi_int(field_group->edit_buf);
+            *(group->fields[group->cursor].data) = atoi_int(group->edit_buf);
         }
         else if(key && key < 30000) {
             if(!numeric_input(key)) {
                 return;
             }
 
-            field_group->edit_cursor = EditMBStringChar(
-                    (unsigned char*)field_group->edit_buf, 
+            group->edit_cursor = EditMBStringChar(
+                    (unsigned char*)group->edit_buf, 
                     INPUT_FIELD_EDIT_BUF_LEN, 
-                    field_group->edit_cursor, 
+                    group->edit_cursor, 
                     key);
-            DisplayMBString((unsigned char*)field_group->edit_buf, 
-                    field_group->edit_start, 
-                    field_group->edit_cursor, 
+            DisplayMBString((unsigned char*)group->edit_buf, 
+                    group->edit_start, 
+                    group->edit_cursor, 
                     1, 8);
         } else {
             EditMBStringCtrl(
-                    (unsigned char*)field_group->edit_buf, 
+                    (unsigned char*)group->edit_buf, 
                     INPUT_FIELD_EDIT_BUF_LEN, 
-                    &field_group->edit_start, 
-                    &field_group->edit_cursor, 
+                    &group->edit_start, 
+                    &group->edit_cursor, 
                     key_ptr, 
                     1, 8);
-            DisplayMBString((unsigned char*)field_group->edit_buf, 
-                    field_group->edit_start, 
-                    field_group->edit_cursor, 
+            DisplayMBString((unsigned char*)group->edit_buf, 
+                    group->edit_start, 
+                    group->edit_cursor, 
                     1, 8);
         }
     }
 }
 
-void scroll_input_field(input_field_group_t *field_group, int offset)
+void scroll_input_group(input_group_t *field_group, int offset)
 {
     int new_cursor = field_group->cursor + offset;
     if(new_cursor < 0 || new_cursor >= field_group->count) return;
