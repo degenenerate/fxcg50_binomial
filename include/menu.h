@@ -30,7 +30,7 @@ typedef struct {
     int b_n; int b_d;
     int p_n; int p_d;
     int n;
-    char output[512];
+    char output[MAX_BINOMIAL_OUTPUT];
     int output_start;
     int output_cursor;
 } menu_data_t;

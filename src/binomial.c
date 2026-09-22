@@ -88,6 +88,13 @@ void format_expansion(char *out, fraction_t *coefs, binomial_info_t *info)
 {
     int offset = 0;
     for(int i=0; i<info->n_count; i++) {
+        // don't forget +1 for null terminator
+        if(offset + MAX_BINOMIAL_TERM_SIZE + 1 + 3 > MAX_BINOMIAL_OUTPUT) {
+            sprintf(out+offset, "...");
+            return;
+        }
+
+
         int n = info->n_start + i*info->n_count;
 
         int pow;

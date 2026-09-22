@@ -26,6 +26,10 @@ fraction_t binomial_simple_n(fraction_t a, fraction_t b, uint p, uint n);
 fraction_t binomial_complex_n(fraction_t a, fraction_t b, fraction_t p, uint n);
 fraction_t *binomial_expansion(binomial_info_t *info);
 
+// 10 comes from ceil(log10(1 << 30))
+//+(%u/%u)x^%u -> 2+10+1+10+3+10 -> 36
+#define MAX_BINOMIAL_TERM_SIZE 36
+#define MAX_BINOMIAL_OUTPUT 512
 void format_expansion(char *out, fraction_t *coefs, binomial_info_t *info);
 
 #endif
