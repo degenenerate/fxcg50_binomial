@@ -4,6 +4,7 @@
 #include <string.h>
 #include <fxcg/display.h>
 #include <fxcg/keyboard.h>
+#include "background.h"
 #include "binomial.h"
 #include "ui_input_field.h"
 
@@ -14,6 +15,7 @@ typedef enum {
     MENU_PAGE_INPUT,
     MENU_PAGE_OUTPUT,
     MENU_PAGE_HELP,
+    MENU_PAGE_CREDITS,
 } menu_page_t;
 
 typedef enum {

@@ -33,10 +33,10 @@ void draw_menu(menu_data_t *menu_data)
 {
     switch(menu_data->page) {
     case MENU_PAGE_SELECT:
-        PrintXY(1, 1, "--Binomial Expansion", TEXT_MODE_NORMAL, TEXT_COLOR_BLUE);
-        PrintXY(1, 5, "--Select Type", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
-        PrintXY(1, 6, "--F1: Simple", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
-        PrintXY(1, 7, "--F2: Complex", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
+        PrintXY(1, 1, "--Binomial Expansion   ", TEXT_MODE_NORMAL, TEXT_COLOR_BLUE);
+        PrintXY(1, 5, "--Select Type          ", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
+        PrintXY(1, 6, "--F1: Simple   1:  Help", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
+        PrintXY(1, 7, "--F2: Complex  2:Credit", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
         break;
 
     case MENU_PAGE_SIMPLE:
@@ -68,6 +68,34 @@ void draw_menu(menu_data_t *menu_data)
     case MENU_PAGE_OUTPUT:
         DisplayMBString((unsigned char*)menu_data->output_buf, menu_data->output_start, menu_data->output_cursor, 1, 8);
         break;
+
+    case MENU_PAGE_HELP:
+        {
+        void print(int x, int y, int color, const char *text)
+        {
+            PrintMini(&x, &y, text, 0x40 | 0x02, 0xFFFFFFFF, 0, 0, color, 0, 1, 0);
+        }
+
+        print(0, 5, COLOR_DARKBLUE, "Help!");
+        print(0, 35,  COLOR_BLACK, "-NAVIGATION: EXIT, EXE, F1...");
+        print(0, 53,  COLOR_BLACK, "-EXPANSION TYPES:");
+        print(0, 71,  COLOR_BLACK, "1. simple  -  (ax+b)^p");
+        print(0, 89,  COLOR_BLACK, "2. complex - a(1+bx)^p");
+        print(0, 107, COLOR_BLACK, "-a,b,p are either rationals or integers");
+        print(0, 125, COLOR_BLACK, "-a_n,a_d->numerator,denominator of a");
+        print(0, 143, COLOR_BLACK, "-In other words: a = (a_n/a_d)");
+        }
+        break;
+
+    case MENU_PAGE_CREDITS:
+        {
+        draw_background();
+        int x = 0, y = 5;
+        PrintMiniMini(&x, &y, "Made by", (1 << 4 | 1 << 6 | 0 << 7),TEXT_COLOR_RED, 0);
+        x = 0, y = 15;
+        PrintMiniMini(&x, &y, "Daiki Hamanoue ^^", (1 << 4 | 1 << 6 | 0 << 7),TEXT_COLOR_RED, 0);
+        }
+        break;
     }
 }
 
@@ -82,6 +110,13 @@ void handle_menu_input(menu_data_t *menu_data, int key)
 
         case KEY_CTRL_F2:
             menu_data->page = MENU_PAGE_COMPLEX;
+            break;
+        case KEY_CHAR_1:
+            menu_data->page = MENU_PAGE_HELP;
+            break;
+        case KEY_CHAR_2:
+            menu_data->page = MENU_PAGE_CREDITS;
+            Bdisp_EnableColor(1);
             break;
         }
         break;
@@ -291,5 +326,22 @@ void handle_menu_input(menu_data_t *menu_data, int key)
             break;
         }
         break;
+
+    case MENU_PAGE_HELP:
+        switch(key) {
+        case KEY_CTRL_EXE:
+        case KEY_CTRL_EXIT:
+            menu_data->page = MENU_PAGE_SELECT;
+            break;
+        }
+        break;
+
+    case MENU_PAGE_CREDITS: 
+        switch(key) {
+        case KEY_CTRL_EXE:
+        case KEY_CTRL_EXIT:
+            menu_data->page = MENU_PAGE_SELECT;
+            break;
+        }
     }
 }
