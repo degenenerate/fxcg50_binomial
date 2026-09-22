@@ -57,7 +57,7 @@ fraction_t binomial_complex_n(fraction_t a, fraction_t b, fraction_t p, uint n)
         if(p.positive) {
             j *=  ((int)p.numer - (int)i*p.denom);
         } else {
-            j *= ((int)-p.numer - (int)i*p.denom);
+            j *= (-(int)p.numer - (int)i*p.denom);
         }
         k *= p.denom;
     }
@@ -88,21 +88,14 @@ void format_expansion(char *out, fraction_t *coefs, binomial_info_t *info)
 {
     int offset = 0;
     for(int i=0; i<info->n_count; i++) {
-        // don't forget +1 for null terminator
-        if(offset + MAX_BINOMIAL_TERM_SIZE + 1 + 3 > MAX_BINOMIAL_OUTPUT) {
-            sprintf(out+offset, "...");
-            return;
-        }
-
-
-        int n = info->n_start + i*info->n_count;
+        int n = info->n_start + i*info->n_incr;
 
         int pow;
         switch(info->type) {
         case BINOMIAL_SIMPLE:
-            pow = info.p.numer - n;
+            pow = info->p.numer - i;
         case BINOMIAL_COMPLEX:
-            pow = n;
+            pow = i;
         }
 
         fraction_t f = coefs[i];
@@ -111,5 +104,11 @@ void format_expansion(char *out, fraction_t *coefs, binomial_info_t *info)
         // sprintf IS FUCKING BROKEN. IT ONLY RETURNS THE LENGTH OF THE NON-FORMATTED CHARACTERS IN THE FORMAT STRING
         sprintf(out+offset, "%s%sx^%i", prefix, fraction, pow);
         offset += strlen(out+offset);
+
+        // don't forget +1 for null terminator
+        if(offset + MAX_BINOMIAL_TERM_SIZE + 1 > MAX_BINOMIAL_OUTPUT) {
+            sprintf(out+offset, "...");
+            return;
+        }
     }
 }

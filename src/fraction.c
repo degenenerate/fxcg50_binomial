@@ -27,7 +27,7 @@ fraction_t fraction_pow(fraction_t a, int p)
     a = fraction_simplify(a);
     fraction_t o = a;
     for(int i=0; i<p-1; ++i) {
-        a.positive = !a.positive;
+        o.positive = o.positive == a.positive;
         o.numer *= a.numer;
         o.denom *= a.denom;
     }

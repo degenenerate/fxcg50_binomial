@@ -13,7 +13,7 @@ void reset_menu_data(menu_data_t *menu_data)
     menu_data->input_data.p_n = 1;
     menu_data->input_data.p_d = 1;
 
-    menu_data->input_group.fields = menu_data->fields;
+    menu_data->input_group.fields = menu_data->input_fields;
     menu_data->input_group.count = 0;
     menu_data->input_group.top = 2;
     menu_data->input_group.height = 6;
@@ -66,7 +66,7 @@ void draw_menu(menu_data_t *menu_data)
         break;
 
     case MENU_PAGE_OUTPUT:
-        DisplayMBString((unsigned char*)menu_data->output, menu_data->output_start, menu_data->output_cursor, 1, 8);
+        DisplayMBString((unsigned char*)menu_data->output_buf, menu_data->output_start, menu_data->output_cursor, 1, 8);
         break;
     }
 }
@@ -89,7 +89,7 @@ void handle_menu_input(menu_data_t *menu_data, int key)
     case MENU_PAGE_SIMPLE:
         switch(key) {
         case KEY_CTRL_EXIT:
-            menu_data->page = MENU_STATE_SELECT;
+            menu_data->page = MENU_PAGE_SELECT;
             break;
         
         case KEY_CTRL_F1:
@@ -177,7 +177,7 @@ void handle_menu_input(menu_data_t *menu_data, int key)
         break;
 
     case MENU_PAGE_INPUT:
-        handle_input_field_input(&menu_data->input_group, &key);
+        handle_input_group_input(&menu_data->input_group, &key);
         switch(key) {
         case KEY_CTRL_EXIT:
             if(menu_data->input_type <= SIMPLE_N) {
@@ -200,12 +200,12 @@ void handle_menu_input(menu_data_t *menu_data, int key)
                     menu_data->binomial_info.n_incr  = +1;
                     menu_data->binomial_info.n_count = menu_data->input_data.n;
                 }
-                else if(*menu_state == MENU_STATE_SIMPLE_DESCENDING) {
+                else if(menu_data->input_type == SIMPLE_DESCENDING) {
                     menu_data->binomial_info.n_start = pow + 1;
                     menu_data->binomial_info.n_incr  = -1;
                     menu_data->binomial_info.n_count = menu_data->input_data.n;
                 }
-                else if(*menu_state == MENU_STATE_SIMPLE_FULL) {
+                else if(menu_data->input_type == SIMPLE_FULL) {
                     menu_data->binomial_info.n_start = 0;
                     menu_data->binomial_info.n_incr  = +1;
                     menu_data->binomial_info.n_count = pow + 1;
@@ -231,7 +231,7 @@ void handle_menu_input(menu_data_t *menu_data, int key)
                     DisplayMessageBox((unsigned char*)"Invalid power");
                     return;
                 }
-
+                menu_data->binomial_info.type = BINOMIAL_SIMPLE;
                 fraction_t *coefs = binomial_expansion(&menu_data->binomial_info); 
                 format_expansion(menu_data->output_buf, coefs, &menu_data->binomial_info);
                 free(coefs);
@@ -246,7 +246,7 @@ void handle_menu_input(menu_data_t *menu_data, int key)
                     return;
                 }
 
-                if(*menu_state == MENU_STATE_COMPLEX_UNTIL) {
+                if(menu_data->input_type == COMPLEX_UNTIL) {
                     menu_data->binomial_info.n_start = 0;
                     menu_data->binomial_info.n_incr  = +1;
                     menu_data->binomial_info.n_count = menu_data->input_data.n;
@@ -256,6 +256,7 @@ void handle_menu_input(menu_data_t *menu_data, int key)
                     menu_data->binomial_info.n_incr  = 0;
                     menu_data->binomial_info.n_count = 1;
                 }
+                menu_data->binomial_info.type = BINOMIAL_COMPLEX;
                 fraction_t *coefs = binomial_expansion(&menu_data->binomial_info); 
                 format_expansion(menu_data->output_buf, coefs, &menu_data->binomial_info);
                 free(coefs);
@@ -283,9 +284,10 @@ void handle_menu_input(menu_data_t *menu_data, int key)
         case KEY_CTRL_EXIT:
             Cursor_SetFlashOff();
             menu_data->page = MENU_PAGE_INPUT;
+            break;
         case KEY_CTRL_EXE:
             Cursor_SetFlashOff();
-            menu_data->page = MENU_STATE_SELECT;
+            menu_data->page = MENU_PAGE_SELECT;
             break;
         }
         break;

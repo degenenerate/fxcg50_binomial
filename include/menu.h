@@ -46,8 +46,8 @@ typedef struct {
 } menu_data_t;
 
 void reset_menu_data(menu_data_t *menu_data);
-void handle_menu(menu_state_t *menu_state, menu_data_t *menu_data, int key);
-void draw_menu(menu_state_t menu_state, menu_data_t *menu_data);
-void handle_menu_input(menu_state_t *menu_state, menu_data_t *menu_data, int key);
+void handle_menu(menu_data_t *menu_data, int key);
+void draw_menu(menu_data_t *menu_data);
+void handle_menu_input(menu_data_t *menu_data, int key);
 
 #endif
