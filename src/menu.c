@@ -39,6 +39,7 @@ void draw_menu(menu_data_t *menu_data)
     switch(menu_data->page) {
     case MENU_PAGE_SELECT:
         PrintXY(1, 1, "--Binomial Expansion   ", TEXT_MODE_NORMAL, TEXT_COLOR_BLUE);
+        PrintXY(1, 2, VERSION_NAME             , TEXT_MODE_NORMAL, TEXT_COLOR_RED);
         PrintXY(1, 5, "--Select Type          ", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
         PrintXY(1, 6, "--F1: Simple   1:  Help", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
         PrintXY(1, 7, "--F2: Complex  2:Credit", TEXT_MODE_NORMAL, TEXT_COLOR_BLACK);
@@ -245,7 +246,7 @@ void handle_menu_input(menu_data_t *menu_data, int key)
                     menu_data->binomial_info.n_count = menu_data->input_data.n;
                 }
                 else if(menu_data->input_type == SIMPLE_DESCENDING) {
-                    menu_data->binomial_info.n_start = pow + 1;
+                    menu_data->binomial_info.n_start = pow;
                     menu_data->binomial_info.n_incr  = -1;
                     menu_data->binomial_info.n_count = menu_data->input_data.n;
                 }
@@ -290,7 +291,7 @@ void handle_menu_input(menu_data_t *menu_data, int key)
                 if(menu_data->input_type == COMPLEX_UNTIL) {
                     menu_data->binomial_info.n_start = 0;
                     menu_data->binomial_info.n_incr  = +1;
-                    menu_data->binomial_info.n_count = menu_data->input_data.n;
+                    menu_data->binomial_info.n_count = menu_data->input_data.n+1;
                 }
                 else {
                     menu_data->binomial_info.n_start = menu_data->input_data.n;

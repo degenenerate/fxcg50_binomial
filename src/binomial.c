@@ -93,9 +93,11 @@ void format_expansion(char *out, fraction_t *coefs, binomial_info_t *info)
         int pow;
         switch(info->type) {
         case BINOMIAL_SIMPLE:
-            pow = info->p.numer - i;
+            pow = info->p.numer - n;
+            break;
         case BINOMIAL_COMPLEX:
-            pow = i;
+            pow = n;
+            break;
         }
 
         fraction_t f = coefs[i];
