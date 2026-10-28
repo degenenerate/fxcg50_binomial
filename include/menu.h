@@ -49,6 +49,8 @@ typedef struct {
     int output_cursor;
 } menu_data_t;
 
+static const char *VERSION_NAME = "--v1.1";
+
 void reset_menu_data(menu_data_t *menu_data);
 void handle_menu(menu_data_t *menu_data, int key);
 void draw_menu(menu_data_t *menu_data);
